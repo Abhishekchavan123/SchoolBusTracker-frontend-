@@ -1,0 +1,49 @@
+import React from 'react'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from "./components/layout";
+import SchoolLayout from "./components/SchoolLayout";
+import SuperDashboard from "./SuperAdmin/Dashboard";
+import Dashboard from "./SchoolAdmin/Dashboard";
+import AddSchool from "./SuperAdmin/AddSchool";
+import SchoolCredentials from "./SuperAdmin/SchoolCredentials";
+import LandingPage from './pages/LandingPage';
+import Login from './pages/Auth/login';
+import AddStudent from './SchoolAdmin/AddStudent';
+import AddDriver from './SchoolAdmin/AddDriver';
+import AddBus from './SchoolAdmin/AddBus';
+import StudentList from './SchoolAdmin/StudentList';
+import DriverList from './SchoolAdmin/DriverList';
+import BusList from './SchoolAdmin/BusList';
+import SchoolList from './SuperAdmin/SchoolList';
+
+const routes = () => {
+    return (
+        <div>
+            <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/login" element={<Login />} />
+                <Route element={<SchoolLayout />}>
+                    <Route path="/school/dashboard" element={<Dashboard />} />
+                    <Route path="/school/addstudent" element={<AddStudent />} />
+                    <Route path="/school/adddriver" element={<AddDriver />} />
+                    <Route path="/school/addbus" element={<AddBus />} />
+                    <Route path="/school/students" element={<StudentList />} />
+                    <Route path="/school/drivers" element={<DriverList />} />
+                    <Route path="/school/buses" element={<BusList />} />
+
+                </Route>
+
+                <Route element={<Layout />}>
+
+                    <Route path="/superdashboard" element={<SuperDashboard />} />
+                    <Route path="/superdashboard/schools" element={<AddSchool />} />
+                    <Route path="/superdashboard/schools/credentials" element={<SchoolCredentials />} />
+                    <Route path="/superdashboard/schools/list" element={<SchoolList />} />
+                </Route>
+
+            </Routes>
+        </div>
+    )
+}
+
+export default routes
