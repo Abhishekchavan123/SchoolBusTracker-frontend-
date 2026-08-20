@@ -1,5 +1,5 @@
 // src/pages/Login.jsx
-
+import { HiMenu, HiX } from "react-icons/hi";
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 
@@ -44,75 +44,58 @@ export default function Login() {
 
         try {
 
-            const res = await fetch("http://localhost:4000/api/auth/login", {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json",
-                },
-
-                body: JSON.stringify({
-
-                    email: email.trim(),
-
-                    password: password.trim(),
-
-                }),
-
-            });
+            const res = await fetch(
+                "https://schoolbustracker-backend-q5qf.onrender.com/api/auth/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        email: email.trim(),
+                        password: password.trim(),
+                    }),
+                }
+            );
 
             const data = await res.json();
 
             if (!res.ok) {
-
-                setError(data.error || "Invalid email or password.");
-
-                return;
-
-            }
-
-            if (data.session?.access_token) {
-
-                localStorage.setItem(
-                    "access_token",
-                    data.session.access_token
+                setError(
+                    data.error || "Invalid email or password."
                 );
-
+                return;
             }
 
-            const meta = data.user?.user_metadata || {};
+            const userObj = data.user;
 
-            const userObj = {
-
-                email: data.user?.email || email,
-
-                fullName:
-                    meta.full_name ||
-                    meta.name ||
-                    email.split("@")[0] ||
-                    "User",
-
-                role: meta.role || "user",
-
-            };
+            // Allow only School Admin
+            if (userObj.role !== "school_admin") {
+                setError(
+                    "Only School Admin can login here."
+                );
+                return;
+            }
 
             localStorage.setItem(
                 "de_authUser",
                 JSON.stringify(userObj)
             );
 
-            alert(`Login Successful! Welcome ${userObj.fullName}`);
+            alert(`Welcome ${userObj.name}`);
 
-            navigate("/");
+            navigate("/school/dashboard");
 
         } catch (err) {
 
-            setError("Network error. Please try again.");
+            console.error(err);
+
+            setError(
+                "Network error. Please try again."
+            );
 
         }
     };
-
     return (
 
         <div className="relative min-h-screen overflow-hidden">
@@ -143,13 +126,13 @@ export default function Login() {
                 <div className="flex items-center gap-2">
 
                     <img
-                        src="https://qsyyshbhsoqfaxoqdqwp.supabase.co/storage/v1/object/sign/assets/logo1.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV83NmNiMWMxMC1iZmFiLTQ0NzgtOWY4My00NmIyMDgxZWIyZmMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJhc3NldHMvbG9nbzEuanBnIiwiaWF0IjoxNzU5Mjg3MTQwLCJleHAiOjE3OTA4MjMxNDB9.gS6qMW_rieUwiP0yFWKsFhr8J9tyYk5pkoydRr5_d6I"
-                        className="w-10 h-10 animate-bounce"
-                        alt=""
+                        src="https://cviefvnvftkewddwuktu.supabase.co/storage/v1/object/sign/visiontrack/bus-icon.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV85ZmNjOGQ1OC04MDVmLTQyNTYtOTgyYS00NDU3MDZhZGFhNzkiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aXNpb250cmFjay9idXMtaWNvbi5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg3MjQ5NjExLCJleHAiOjE4MTg3ODU2MTF9.yNW-gst7s06ngSvletBRnkT3YFAG4e57Qf8K4qeZa-E"
+                        className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 animate-bounce"
+                        alt="SchoolBusTracker Logo"
                     />
 
-                    <h1 className="text-3xl font-bold text-yellow-400">
-                        SchoolBusTracker
+                    <h1 className="text-lg sm:text-2xl md:text-3xl font-bold text-yellow-400 drop-shadow-lg whitespace-nowrap">
+                        VisionTrack
                     </h1>
 
                 </div>
@@ -175,7 +158,7 @@ export default function Login() {
 
                     <h2 className="text-3xl font-bold text-center text-green-600 mb-8">
 
-                        Login to SchoolBusTracker
+                        Login to VisionTrack
 
                     </h2>
 
@@ -233,17 +216,17 @@ export default function Login() {
 
                             <button
                                 type="submit"
-                                className="w-1/2 bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold"
+                                className="w-1/2 bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-semibold "
                             >
                                 Login
                             </button>
 
-                            <Link
+                            {/* <Link
                                 to="/auth/register"
                                 className="w-1/2 bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg text-center font-semibold"
                             >
                                 Register
-                            </Link>
+                            </Link> */}
 
                         </div>
 

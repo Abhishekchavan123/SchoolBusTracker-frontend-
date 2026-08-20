@@ -159,43 +159,6 @@ export default function AddSchool() {
             <div>
 
               <label className="block mb-2 font-medium">
-                School Board
-              </label>
-
-              <select
-                name="board"
-                value={school.board}
-                onChange={handleChange}
-                className="w-full border rounded-xl p-3"
-              >
-                <option>CBSE</option>
-                <option>ICSE</option>
-                <option>State Board</option>
-                <option>IB</option>
-              </select>
-
-            </div>
-
-            <div>
-
-              <label className="block mb-2 font-medium">
-                Principal Name
-              </label>
-
-              <input
-                type="text"
-                name="principal"
-                value={school.principal}
-                onChange={handleChange}
-                placeholder="Principal Name"
-                className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-
-            </div>
-
-            <div>
-
-              <label className="block mb-2 font-medium">
                 School Email
               </label>
 
@@ -318,77 +281,6 @@ export default function AddSchool() {
 
         </div>
 
-        {/* Transport Information */}
-
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-
-          <div className="bg-orange-50 border-b px-6 py-4 flex items-center gap-3">
-
-            <FaBus className="text-orange-500 text-2xl" />
-
-            <h2 className="text-2xl font-bold text-gray-800">
-              Transport Information
-            </h2>
-
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-8">
-
-            <div>
-
-              <label className="block mb-2 font-medium">
-                Total Students
-              </label>
-
-              <input
-                type="number"
-                name="totalStudents"
-                value={school.totalStudents}
-                onChange={handleChange}
-                placeholder="1500"
-                className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-
-            </div>
-
-            <div>
-
-              <label className="block mb-2 font-medium">
-                Total Buses
-              </label>
-
-              <input
-                type="number"
-                name="totalBuses"
-                value={school.totalBuses}
-                onChange={handleChange}
-                placeholder="25"
-                className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-
-            </div>
-
-            <div>
-
-              <label className="block mb-2 font-medium">
-                Total Drivers
-              </label>
-
-              <input
-                type="number"
-                name="totalDrivers"
-                value={school.totalDrivers}
-                onChange={handleChange}
-                placeholder="22"
-                className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-
-            </div>
-
-          </div>
-
-        </div>
-
         {/* School Admin Credentials */}
 
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -470,80 +362,6 @@ export default function AddSchool() {
                 placeholder="********"
                 className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"
               />
-
-            </div>
-
-          </div>
-
-        </div>
-        {/* Settings */}
-
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-
-          <div className="bg-cyan-50 border-b px-6 py-4 flex items-center gap-3">
-
-            <FaCog className="text-cyan-600 text-2xl" />
-
-            <h2 className="text-2xl font-bold text-gray-800">
-              School Settings
-            </h2>
-
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-8">
-
-            <div>
-
-              <label className="block mb-2 font-medium">
-                School Status
-              </label>
-
-              <select
-                name="status"
-                value={school.status}
-                onChange={handleChange}
-                className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"
-              >
-                <option>Active</option>
-                <option>Inactive</option>
-                <option>Pending</option>
-              </select>
-
-            </div>
-
-            <div>
-
-              <label className="block mb-2 font-medium">
-                Subscription Plan
-              </label>
-
-              <select
-                name="plan"
-                value={school.plan}
-                onChange={handleChange}
-                className="w-full border rounded-xl p-3 focus:ring-2 focus:ring-blue-500 outline-none"
-              >
-                <option>Premium</option>
-                <option>Enterprise</option>
-                <option>Basic</option>
-              </select>
-
-            </div>
-
-            <div className="md:col-span-2">
-
-              <label className="block mb-2 font-medium">
-                School Logo
-              </label>
-
-              <input
-                type="file"
-                className="w-full border rounded-xl p-3 file:bg-blue-600 file:text-white file:border-0 file:px-4 file:py-2 file:rounded-lg file:mr-4"
-              />
-
-              <p className="text-sm text-gray-500 mt-2">
-                Upload JPG, PNG or SVG (Maximum 2 MB)
-              </p>
 
             </div>
 

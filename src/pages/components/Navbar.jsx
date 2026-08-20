@@ -1,5 +1,5 @@
 // src/components/Navbar.jsx
-
+import { HiMenu, HiX } from "react-icons/hi";
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -10,7 +10,7 @@ export default function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
 
   const profileRef = useRef(null);
-
+  const [mobileMenu, setMobileMenu] = useState(false);
   useEffect(() => {
     const token = localStorage.getItem("access_token");
 
@@ -38,154 +38,223 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    function handleClickOutside(e) {
-      if (
-        profileRef.current &&
-        !profileRef.current.contains(e.target)
-      ) {
-        setShowMenu(false);
+    try {
+      const raw = localStorage.getItem("de_authUser");
+
+      if (raw) {
+        const u = JSON.parse(raw);
+
+        setUser({
+          name: u.name || u.email || "User",
+          role: u.role || "",
+        });
       }
+    } catch (err) {
+      console.error(err);
     }
-
-    document.addEventListener("click", handleClickOutside);
-
-    return () =>
-      document.removeEventListener(
-        "click",
-        handleClickOutside
-      );
   }, []);
 
   const logout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("de_authUser");
-
+    localStorage.clear();
     setUser(null);
 
     navigate("/login");
   };
 
   return (
-    <nav  className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 py-5 bg-transparent">
+    <nav className="fixed top-0 left-0 w-full z-50 bg-transparent px-4 md:px-8 py-4">
+      <div className="flex items-center justify-between">
 
-      {/* Logo */}
+        {/* Logo */}
+        <div className="flex items-center space-x-2">
 
-      <div className="flex items-center space-x-2">
+          <img
+            src="https://cviefvnvftkewddwuktu.supabase.co/storage/v1/object/sign/visiontrack/bus-icon.png?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV85ZmNjOGQ1OC04MDVmLTQyNTYtOTgyYS00NDU3MDZhZGFhNzkiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJ2aXNpb250cmFjay9idXMtaWNvbi5wbmciLCJzY29wZSI6ImRvd25sb2FkIiwiaWF0IjoxNzg3MjQ5NjExLCJleHAiOjE4MTg3ODU2MTF9.yNW-gst7s06ngSvletBRnkT3YFAG4e57Qf8K4qeZa-E"
+            className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 animate-bounce"
+            alt="SchoolBusTracker Logo"
+          />
 
-        <img
-          src="https://qsyyshbhsoqfaxoqdqwp.supabase.co/storage/v1/object/sign/assets/logo1.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV83NmNiMWMxMC1iZmFiLTQ0NzgtOWY4My00NmIyMDgxZWIyZmMiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJhc3NldHMvbG9nbzEuanBnIiwiaWF0IjoxNzU5Mjg3MTQwLCJleHAiOjE3OTA4MjMxNDB9.gS6qMW_rieUwiP0yFWKsFhr8J9tyYk5pkoydRr5_d6I"
-          className="w-10 h-10 animate-bounce"
-          alt=""
-        />
+          <h1 className="text-lg sm:text-2xl md:text-3xl font-bold text-yellow-400 drop-shadow-lg whitespace-nowrap">
+            VisionTrack
+          </h1>
 
-        <h1 className="text-3xl font-bold text-yellow-400 drop-shadow-lg">
-          SchoolBusTracker
-        </h1>
-
-      </div>
-
-      {/* Links */}
-
-      <div className="flex items-center space-x-8 text-lg">
-
-        <a
-          href="#"
-          className="hover:text-yellow-400 transition"
+        </div>
+        <button
+          onClick={() => setMobileMenu(!mobileMenu)}
+          className="md:hidden text-white"
         >
-          Home
-        </a>
+          {mobileMenu ? <HiX size={30} /> : <HiMenu size={30} />}
+        </button>
+        {/* Links */}
 
-        {/* <Link
+        <div className="hidden md:flex items-center space-x-8 text-lg">
+
+          <a
+            href="#"
+            className="hover:text-yellow-400 transition"
+          >
+            Home
+          </a>
+
+          {/* <Link
           to="/join-ngo"
           className="hover:text-yellow-400 transition"
         >
           Join as NGO
         </Link> */}
 
-        <a
-          href="#about"
-          className="hover:text-yellow-400 transition"
-        >
-          About Us
-        </a>
-
-        <a
-          href="#contact"
-          className="hover:text-yellow-400 transition"
-        >
-          Contact Us
-        </a>
-
-        {!user ? (
-          <Link
-            to="/login"
+          <a
+            href="#about"
             className="hover:text-yellow-400 transition"
           >
-            Login / Register
-          </Link>
-        ) : (
-          <div
-            ref={profileRef}
-            className="relative"
+            About Us
+          </a>
+
+          <a
+            href="#contact"
+            className="hover:text-yellow-400 transition"
           >
-            <button
-              onClick={() => setShowMenu(!showMenu)}
-              className="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-md text-sm"
+            Contact Us
+          </a>
+
+          {!user ? (
+            <Link
+              to="/login"
+              className="hover:text-yellow-400 transition"
             >
-              <span className="inline-grid place-items-center w-7 h-7 rounded-full bg-yellow-400 text-black font-bold">
-                {user.name.charAt(0).toUpperCase()}
-              </span>
-
-              <span className="hidden md:block">
-                {user.name}
-              </span>
-
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+              Login / Register
+            </Link>
+          ) : (
+            <div
+              ref={profileRef}
+              className="relative"
+            >
+              <button
+                onClick={() => setShowMenu(!showMenu)}
+                className="flex items-center gap-2 px-3 py-1.5 bg-white/10 hover:bg-white/20 rounded-md text-sm"
               >
-                <path
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
+                <span className="inline-grid place-items-center w-7 h-7 rounded-full bg-yellow-400 text-black font-bold">
+                  {user.name.charAt(0).toUpperCase()}
+                </span>
 
-            {showMenu && (
-              <div className="absolute right-0 mt-2 w-44 bg-white rounded-md shadow-xl text-gray-700 overflow-hidden">
+                <span className="hidden md:block">
+                  {user.name}
+                </span>
 
-                <Link
-                  to="/volunteer"
-                  className="block px-4 py-3 hover:bg-gray-100"
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  Dashboard
-                </Link>
+                  <path
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </button>
 
-                <Link
-                  to="/auth/profile"
-                  className="block px-4 py-3 hover:bg-gray-100"
-                >
-                  Edit Profile
-                </Link>
+              {showMenu && (
+                <div className="absolute right-0 mt-2 w-44 bg-white rounded-md shadow-xl text-gray-700 overflow-hidden">
 
-                <div className="border-t" />
+                  <Link
+                    to="/school/dashboard"
+                    className="block px-4 py-3 hover:bg-gray-100"
+                  >
+                    Dashboard
+                  </Link>
 
-                <button
-                  onClick={logout}
-                  className="block w-full text-left px-4 py-3 hover:bg-gray-100 text-red-600"
-                >
-                  Logout
-                </button>
+                  {/* <Link
+                    to="/auth/profile"
+                    className="block px-4 py-3 hover:bg-gray-100"
+                  >
+                    Edit Profile
+                  </Link> */}
 
-              </div>
-            )}
-          </div>
-        )}
+                  <div className="border-t" />
+
+                  <button
+                    onClick={logout}
+                    className="block w-full text-left px-4 py-3 hover:bg-gray-100 text-red-600"
+                  >
+                    Logout
+                  </button>
+
+                </div>
+              )}
+            </div>
+          )}
+
+        </div>
       </div>
+      {mobileMenu && (
+        <div className="md:hidden mt-4 bg-black/90 backdrop-blur-lg rounded-xl p-5 space-y-4 text-white shadow-xl">
+
+          <a
+            href="#"
+            className="block hover:text-yellow-400"
+            onClick={() => setMobileMenu(false)}
+          >
+            Home
+          </a>
+
+          <a
+            href="#about"
+            className="block hover:text-yellow-400"
+            onClick={() => setMobileMenu(false)}
+          >
+            About Us
+          </a>
+
+          <a
+            href="#contact"
+            className="block hover:text-yellow-400"
+            onClick={() => setMobileMenu(false)}
+          >
+            Contact Us
+          </a>
+
+          {!user ? (
+            <Link
+              to="/login"
+              className="block hover:text-yellow-400"
+              onClick={() => setMobileMenu(false)}
+            >
+              Login / Register
+            </Link>
+          ) : (
+            <>
+              <Link
+                to="/school/dashboard"
+                className="block hover:text-yellow-400"
+                onClick={() => setMobileMenu(false)}
+              >
+                Dashboard
+              </Link>
+
+              <Link
+                to="/auth/profile"
+                className="block hover:text-yellow-400"
+                onClick={() => setMobileMenu(false)}
+              >
+                Edit Profile
+              </Link>
+
+              <button
+                onClick={() => {
+                  logout();
+                  setMobileMenu(false);
+                }}
+                className="block text-red-400"
+              >
+                Logout
+              </button>
+            </>
+          )}
+        </div>
+      )}
     </nav>
   );
 }

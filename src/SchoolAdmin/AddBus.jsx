@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import API_URL from "../api";
 export default function AddBus() {
   const navigate = useNavigate();
+  // const [schools, setSchools] = useState([]);
+  const loggedSchool = JSON.parse(localStorage.getItem("de_authUser"));
+
   const [bus, setBus] = useState({
     bus_number: "",
     bus_name: "",
@@ -12,8 +15,7 @@ export default function AddBus() {
     capacity: "",
     route_number: "",
     route_name: "",
-    school_id: "",
-    driver_id: "",
+    school_id: loggedSchool?.school_id || "",
   });
 
   const handleChange = (e) => {
@@ -22,26 +24,38 @@ export default function AddBus() {
       [e.target.name]: e.target.value,
     });
   };
+  // useEffect(() => {
+  //   loadSchools();
+  // }, []);
 
+  // const loadSchools = async () => {
+  //   try {
+  //     const res = await axios.get(`${API_URL}/schools`);
+
+  //     setSchools(res.data);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const res = await axios.post(`${API_URL}/buses`, bus);
+    try {
+      const res = await axios.post(`${API_URL}/buses`, bus);
 
-    console.log(res.data);
+      console.log(res.data);
 
-    alert("Bus Added Successfully");
+      alert("Bus Added Successfully");
 
-    navigate("/school/dashboard");
-  } catch (err) {
-    console.error(err);
-    alert(
-      err.response?.data?.message ||
-      "Failed to add bus"
-    );
-  }
-};
+      navigate("/school/dashboard");
+    } catch (err) {
+      console.error(err);
+      alert(
+        err.response?.data?.message ||
+        "Failed to add bus"
+      );
+    }
+  };
   return (
     <div>
       <h1 className="text-4xl font-bold mb-8">Add Bus</h1>
@@ -133,7 +147,7 @@ export default function AddBus() {
             />
           </div>
 
-          {/* Route Information */}
+          {/* Route Information 
 
           <div className="md:col-span-2 mt-2">
             <h2 className="text-xl font-semibold text-green-600 border-b pb-2">
@@ -169,33 +183,27 @@ export default function AddBus() {
               placeholder="City Center Route"
               className="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
             />
-          </div>
+          </div>*/}
 
           <div>
             <label className="block mb-2 font-medium text-gray-700">
-              School Name
+              School ID
             </label>
 
-            <select
-              name="school_id"
+            <input
+              type="text"
               value={bus.school_id}
-              onChange={handleChange}
-              className="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-            >
-              <option value="">Select School</option>
-
-              <option value="540eae5f-cede-4042-adf4-c6d544f29eab">
-                ABC School
-              </option>
-            </select>
+              readOnly
+              className="w-full rounded-xl border border-gray-300 bg-gray-100 p-3"
+            />
           </div>
 
           <div>
-            <label className="block mb-2 font-medium text-gray-700">
+            {/* <label className="block mb-2 font-medium text-gray-700">
               Assigned Driver
-            </label>
+            </label> */}
 
-            <select
+            {/* <select
               name="driver_id"
               value={bus.driver_id}
               onChange={handleChange}
@@ -206,41 +214,8 @@ export default function AddBus() {
               <option value="e024e554-d96b-4dc6-a253-94635dac92c9">
                 Ramesh Kumar
               </option>
-            </select>
+            </select> */}
           </div>
-
-          {/* Tracking Information */}
-
-          <div className="md:col-span-2 mt-2">
-            <h2 className="text-xl font-semibold text-purple-600 border-b pb-2">
-              Tracking Information
-            </h2>
-          </div>
-
-          <div>
-            <label className="block mb-2 font-medium text-gray-700">
-              GPS Device ID
-            </label>
-
-            <input
-              type="text"
-              placeholder="GPS-001"
-              className="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 outline-none transition focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-100"
-            />
-          </div>
-
-          <div>
-            <label className="block mb-2 font-medium text-gray-700">
-              Bus Status
-            </label>
-
-            <select className="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
-              <option>Active</option>
-              <option>Maintenance</option>
-              <option>Inactive</option>
-            </select>
-          </div>
-
 
           <div className="md:col-span-2 mt-4 gap-4 flex justify-end">
             <button

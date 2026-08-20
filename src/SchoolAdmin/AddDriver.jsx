@@ -1,19 +1,40 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import API_URL from "../api";
 export default function AddDriver() {
   const navigate = useNavigate();
+
+  const loggedSchool = JSON.parse(localStorage.getItem("de_authUser"));
+
   const [driver, setDriver] = useState({
     driver_name: "",
     phone: "",
     email: "",
     license_number: "",
     bus_id: "",
-    school_id: "540eae5f-cede-4042-adf4-c6d544f29eab", // ABC School
+    school_id: loggedSchool?.school_id || "",
     password: "",
     confirmPassword: "",
   });
+
+  const [buses, setBuses] = useState([]);
+
+  useEffect(() => {
+    fetchBuses();
+  }, []);
+
+  const fetchBuses = async () => {
+    try {
+      const res = await axios.get(
+        `${API_URL}/buses/school/${loggedSchool.school_id}`
+      );
+
+      setBuses(res.data.buses);
+    } catch (err) {
+      console.error("Failed to fetch buses:", err);
+    }
+  };
 
   const handleChange = (e) => {
     setDriver({
@@ -23,42 +44,47 @@ export default function AddDriver() {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (driver.password !== driver.confirmPassword) {
-    alert("Passwords do not match");
-    return;
-  }
+    if (driver.password !== driver.confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
 
-  const passwordRegex =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
-  if (!passwordRegex.test(driver.password)) {
-    alert(
-      "Password must be at least 8 characters and contain uppercase, lowercase, number, and special character."
-    );
-    return;
-  }
+    if (!passwordRegex.test(driver.password)) {
+      alert(
+        "Password must be at least 8 characters and contain uppercase, lowercase, number, and special character."
+      );
+      return;
+    }
 
-  try {
-    await axios.post(`${API_URL}/drivers`, {
-      driver_name: driver.driver_name,
-      email: driver.email,
-      password: driver.password,
-      phone: driver.phone,
-      license_number: driver.license_number,
-      school_id: driver.school_id,
-      bus_id: driver.bus_id,
-    });
+    try {
+      await axios.post(`${API_URL}/drivers`, {
+        driver_name: driver.driver_name,
+        email: driver.email,
+        password: driver.password,
+        phone: driver.phone,
+        license_number: driver.license_number,
+        school_id: driver.school_id,
+        bus_id: driver.bus_id,
+      });
 
-    alert("Driver Added Successfully");
+      alert("Driver Added Successfully");
 
-    navigate("/school/dashboard");
-  } catch (err) {
-    console.error(err);
-    alert("Failed to add driver");
-  }
-};
+      navigate("/school/dashboard");
+    } catch (err) {
+      console.error("Driver Error:", err.response?.data);
+
+      alert(
+        err.response?.data?.error ||
+        err.response?.data?.message ||
+        "Failed to add driver"
+      );
+    }
+  };
   return (
     <div>
       <h1 className="text-4xl font-bold mb-8">Add Driver</h1>
@@ -148,9 +174,11 @@ export default function AddDriver() {
             >
               <option value="">Select Bus</option>
 
-              <option value="939e766a-d7fd-46ca-89df-9e7372904ece">
-                BUS001 - School Bus 1
-              </option>
+              {buses.map((bus) => (
+                <option key={bus.id} value={bus.id}>
+                  {bus.bus_number} - {bus.vehicle_registration_number}
+                </option>
+              ))}
             </select>
           </div>
 

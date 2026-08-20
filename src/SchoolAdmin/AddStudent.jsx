@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import API_URL from "../api";
@@ -45,11 +45,43 @@ export default function AddStudent() {
     parent_email: "",
     password: "",
     confirmPassword: "",
-    school_id: "540eae5f-cede-4042-adf4-c6d544f29eab",
-    bus_id: "939e766a-d7fd-46ca-89df-9e7372904ece",
+    school_id: "",
+    bus_id: "",
     pickup_point: "",
     drop_point: "",
   });
+
+  const [selectedDriver, setSelectedDriver] = useState("");
+  const [drivers, setDrivers] = useState([]);
+
+  useEffect(() => {
+    const school = JSON.parse(localStorage.getItem("de_authUser"));
+
+    console.log("Logged School:", school);
+
+    if (school?.school_id) {
+      setStudent((prev) => ({
+        ...prev,
+        school_id: school.school_id,
+      }));
+
+      fetchDrivers(school.school_id);
+    }
+  }, []);
+
+  const fetchDrivers = async (schoolId) => {
+    try {
+      const res = await axios.get(
+        `${API_URL}/drivers/school/${schoolId}`
+      );
+
+      console.log("Drivers:", res.data);
+      setDrivers(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
     <div>
       <h1 className="text-4xl font-bold mb-8">Add Student</h1>
@@ -193,11 +225,29 @@ export default function AddStudent() {
               Assigned Driver
             </label>
 
-            <select className="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100">
-              <option>Select Driver</option>
-              <option>Driver 1</option>
-              <option>Driver 2</option>
-              <option>Driver 3</option>
+            <select
+              value={selectedDriver}
+              onChange={(e) => {
+                const driverId = e.target.value;
+
+                setSelectedDriver(driverId);
+
+                const driver = drivers.find((d) => d.id === driverId);
+
+                setStudent((prev) => ({
+                  ...prev,
+                  bus_id: driver?.bus_id || "",
+                }));
+              }}
+              className="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+            >
+              <option value="">Select Driver</option>
+
+              {drivers.map((driver) => (
+                <option key={driver.id} value={driver.id}>
+                  {driver.driver_name} ({driver.phone})
+                </option>
+              ))}
             </select>
           </div>
 

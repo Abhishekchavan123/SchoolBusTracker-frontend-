@@ -15,11 +15,11 @@ export default function Contact() {
       </p>
 
       <p className="text-gray-400">
-        📧 support@donateeasy.com
+        📧 info@shivaenterprises.net.in
       </p>
 
       <p className="text-gray-400 mt-2">
-        📞 +91 8050259617
+        📞 +91 7349018613
       </p>
     </section>
   );
