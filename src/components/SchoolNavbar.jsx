@@ -86,7 +86,7 @@ export default function SchoolNavbar({
           📅 {today}
         </div>
 
-        <button className="relative">
+        {/* <button className="relative">
 
           <FaBell className="text-2xl text-gray-700" />
 
@@ -94,7 +94,7 @@ export default function SchoolNavbar({
             3
           </span>
 
-        </button>
+        </button> */}
 
         <div className="relative" ref={dropdownRef}>
 

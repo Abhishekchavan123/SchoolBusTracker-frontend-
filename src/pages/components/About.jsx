@@ -18,7 +18,7 @@ export default function About() {
                 </h2>
 
                 <p className="text-lg md:text-xl leading-8 text-gray-200">
-                    SchoolBusTracker is an innovative platform designed to bridge the gap between schools, parents, and school buses by providing real-time location tracking, instant notifications, and enhanced student safety throughout every journey.
+                    VisionTrack is an innovative platform designed to bridge the gap between schools, parents, and school buses by providing real-time location tracking, instant notifications, and enhanced student safety throughout every journey.
                     <br /><br />
 
                     <span className="text-yellow-400 font-semibold">

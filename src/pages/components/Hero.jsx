@@ -12,7 +12,7 @@ const images = [
 
 export default function Hero() {
     const [current, setCurrent] = useState(0);
-const navigate = useNavigate();
+    const navigate = useNavigate();
     useEffect(() => {
         const interval = setInterval(() => {
             setCurrent((prev) => (prev + 1) % images.length);
@@ -46,13 +46,13 @@ const navigate = useNavigate();
             <div className="relative z-10 flex h-screen flex-col items-center justify-center pt-24 px-6 text-center animate-fadeIn">
 
                 <h1 className="mb-6 text-5xl font-extrabold leading-tight text-yellow-400 drop-shadow-lg md:text-6xl ">
-                 Trusted Technology for Safety 
+                    Trusted Technology for Safety
                     <br />
                     and Security Of Childrens.
                 </h1>
 
                 <p className="mb-8 max-w-2xl text-lg text-gray-200 md:text-xl">
-                 From identity cards to analytics, bring every part of your institution onto one reliable, future-ready platform.
+                    From identity cards to analytics, bring every part of your institution onto one reliable, future-ready platform.
                     <br />
                     <br />
                     <span className="italic">
@@ -61,7 +61,20 @@ const navigate = useNavigate();
                 </p>
 
                 <a >
-                    <button onClick={() => navigate("/school/dashboard")} className="rounded-lg bg-green-500 px-8 py-3 text-lg font-semibold text-white transition hover:bg-green-600 hover:scale-105">
+                    <button
+                        onClick={() => {
+                            const user = localStorage.getItem("de_authUser");
+
+                            if (!user) {
+                                alert("Please login first to access the School Dashboard.");
+                                navigate("/login");   // change this route if your login page is different
+                                return;
+                            }
+
+                            navigate("/school/dashboard");
+                        }}
+                        className="rounded-lg bg-green-500 px-8 py-3 text-lg font-semibold text-white transition hover:bg-green-600 hover:scale-105"
+                    >
                         Get Started
                     </button>
                 </a>

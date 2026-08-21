@@ -20,6 +20,9 @@ import BusDetails from "./SchoolAdmin/BusDetails";
 // Driver Pages
 import DriverDetails from "./SchoolAdmin/DriverDetails";
 import EditDriver from "./SchoolAdmin/EditDriver";
+// Student Pages
+import StudentDetails from "./SchoolAdmin/StudentDetails";
+import EditStudent from "./SchoolAdmin/EditStudent";
 
 const routes = () => {
     return (
@@ -46,7 +49,16 @@ const routes = () => {
                         path="/school/drivers/edit/:id"
                         element={<EditDriver />}
                     />
+                    {/* Student */}
+                    <Route
+                        path="/school/students/view/:id"
+                        element={<StudentDetails />}
+                    />
 
+                    <Route
+                        path="/school/students/edit/:id"
+                        element={<EditStudent />}
+                    />
                 </Route>
 
                 <Route element={<Layout />}>
