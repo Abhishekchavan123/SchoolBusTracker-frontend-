@@ -1,194 +1,154 @@
-import {
-  FaEye,
-  FaEdit,
-  FaTrash,
-  FaSearch,
-  FaBus,
-} from "react-icons/fa";
+
+// Updated BusList.jsx
+import { useState, useEffect, useMemo } from "react";
+import axios from "axios";
+import API_URL from "../api";
+import { FaEye, FaEdit, FaTrash, FaSearch, FaBus } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 export default function BusList() {
-  const buses = [
-    {
-      id: "BUS001",
-      number: "KA32AB1234",
-      name: "School Bus 1",
-      model: "Ashok Leyland",
-      capacity: 50,
-      driver: "Mahesh",
-      school: "ABC Public School",
-      route: "R-101",
-      gps: "GPS-001",
-      status: "Active",
-    },
-    {
-      id: "BUS002",
-      number: "KA32CD5678",
-      name: "School Bus 2",
-      model: "Tata Starbus",
-      capacity: 45,
-      driver: "Ravi",
-      school: "ABC Public School",
-      route: "R-102",
-      gps: "GPS-002",
-      status: "On Trip",
-    },
-    {
-      id: "BUS003",
-      number: "KA32EF9012",
-      name: "School Bus 3",
-      model: "Eicher Skyline",
-      capacity: 40,
-      driver: "Suresh",
-      school: "XYZ International",
-      route: "R-201",
-      gps: "GPS-003",
-      status: "Maintenance",
-    },
-  ];
+  const navigate = useNavigate();
+  const [buses, setBuses] = useState([]);
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const fetchBuses = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const school = JSON.parse(localStorage.getItem("de_authUser"));
+      console.log("Logged School:", school);
+      console.log("School ID:", school?.school_id);
+      const res = await axios.get(
+        `${API_URL}/buses/school/${school.school_id}`
+      );
+
+      setBuses(res.data.buses || []);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to load buses.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchBuses();
+  }, []);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this bus?")) return;
+    try {
+      await axios.delete(`${API_URL}/buses/${id}`);
+      alert("Bus deleted successfully.");
+      fetchBuses();
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.error || "Failed to delete bus.");
+    }
+  };
+
+  const filteredBuses = useMemo(() => {
+    const q = search.toLowerCase();
+    return buses.filter((b) =>
+      b.bus_name?.toLowerCase().includes(q) ||
+      b.bus_number?.toLowerCase().includes(q) ||
+      b.vehicle_model?.toLowerCase().includes(q)
+    );
+  }, [buses, search]);
 
   return (
     <div>
-      {/* Header */}
-
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-4xl font-bold">Bus List</h1>
-
-          <p className="text-gray-500 mt-1">
-            Manage all registered school buses
-          </p>
+          <p className="text-gray-500 mt-1">Manage all registered school buses</p>
         </div>
-
         <div className="bg-blue-600 text-white px-5 py-3 rounded-xl shadow">
-          Total Buses : {buses.length}
+          Total Buses : {filteredBuses.length}
         </div>
       </div>
 
-      {/* Search */}
-
       <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-5 mb-6">
-
         <div className="relative">
-
           <FaSearch className="absolute left-4 top-4 text-gray-400" />
-
           <input
             type="text"
             placeholder="Search bus..."
-            className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-300 bg-gray-50 outline-none focus:ring-4 focus:ring-blue-100 focus:border-blue-500"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-300 bg-gray-50"
           />
-
         </div>
-
       </div>
 
-      {/* Table */}
+      {loading ? (
+        <div className="p-8 text-center">Loading...</div>
+      ) : error ? (
+        <div className="p-8 text-center text-red-600">{error}</div>
+      ) : (
+        <>
+          <div className="hidden md:block bg-white rounded-2xl shadow-lg border border-gray-200 overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-blue-600 text-white">
+                <tr>
+                  <th className="p-4">Bus</th>
+                  <th className="p-4">Number</th>
+                  <th className="p-4">Model</th>
+                  <th className="p-4">Capacity</th>
+                  <th className="p-4"></th>
+                  <th className="p-4">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredBuses.map((bus, i) => (
+                  <tr key={bus.id || bus.bus_id || i} className="border-b hover:bg-blue-50">
+                    <td className="p-4 text-center">
+                      <div className="flex items-center justify-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700"><FaBus /></div>
+                        {bus.bus_name}
+                      </div>
+                    </td>
+                    <td className="p-4 text-center">{bus.bus_number}</td>
+                    <td className="p-4 text-center">{bus.vehicle_model}</td>
+                    <td className="p-4 text-center">{bus.capacity}</td>
+                    <td className="p-4 text-center">{bus.route_number}</td>
+                    <td className="p-4">
+                      <div className="flex justify-center gap-3">
+                        <button onClick={() => navigate(`/school/buses/view/${bus.id || bus.bus_id}`)} className="text-blue-600"><FaEye /></button>
+                        <button onClick={() => navigate(`/school/buses/edit/${bus.id || bus.bus_id}`)} className="text-green-600"><FaEdit /></button>
+                        <button onClick={() => handleDelete(bus.id || bus.bus_id)} className="text-red-600"><FaTrash /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-x-auto">
-
-        <table className="w-full">
-
-          <thead className="bg-blue-600 text-white">
-
-            <tr>
-              <th className="p-4 text-left">Bus</th>
-              <th className="p-4 text-left">Bus No.</th>
-              <th className="p-4 text-left">Model</th>
-              <th className="p-4 text-left">Capacity</th>
-              <th className="p-4 text-left">School</th>
-              <th className="p-4 text-left">Route</th>
-              <th className="p-4 text-left">Driver</th>
-              <th className="p-4 text-left">GPS ID</th>
-              <th className="p-4 text-left">Status</th>
-              <th className="p-4 text-center">Actions</th>
-            </tr>
-
-          </thead>
-
-          <tbody>
-
-            {buses.map((bus) => (
-
-              <tr
-                key={bus.id}
-                className="border-b hover:bg-blue-50 transition"
-              >
-
-                <td className="p-4">
-
-                  <div className="flex items-center gap-3">
-
-                    <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700">
-                      <FaBus />
-                    </div>
-
-                    <span className="font-semibold">
-                      {bus.name}
-                    </span>
-
+          <div className="md:hidden space-y-4 mt-6">
+            {filteredBuses.map((bus, i) => (
+              <div key={bus.id || bus.bus_id || i} className="bg-white rounded-2xl shadow-lg border border-gray-200 p-5">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700"><FaBus /></div>
+                  <div>
+                    <h3 className="font-semibold">{bus.bus_name}</h3>
+                    <p className="text-sm text-gray-500">{bus.bus_number}</p>
                   </div>
+                </div>
 
-                </td>
-
-                <td className="p-4">{bus.number}</td>
-
-                <td className="p-4">{bus.model}</td>
-
-                <td className="p-4">{bus.capacity}</td>
-
-                <td className="p-4">{bus.school}</td>
-
-                <td className="p-4">{bus.route}</td>
-
-                <td className="p-4">{bus.driver}</td>
-
-                <td className="p-4">{bus.gps}</td>
-
-                <td className="p-4">
-
-                  <span
-                    className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                      bus.status === "Active"
-                        ? "bg-green-100 text-green-700"
-                        : bus.status === "On Trip"
-                        ? "bg-blue-100 text-blue-700"
-                        : "bg-yellow-100 text-yellow-700"
-                    }`}
-                  >
-                    {bus.status}
-                  </span>
-
-                </td>
-
-                <td className="p-4">
-
-                  <div className="flex justify-center gap-3">
-
-                    <button className="text-blue-600 hover:scale-110 transition">
-                      <FaEye />
-                    </button>
-
-                    <button className="text-green-600 hover:scale-110 transition">
-                      <FaEdit />
-                    </button>
-
-                    <button className="text-red-600 hover:scale-110 transition">
-                      <FaTrash />
-                    </button>
-
-                  </div>
-
-                </td>
-
-              </tr>
-
+                <div className="flex justify-center gap-4 mt-5">
+                  <button onClick={() => navigate(`/school/buses/view/${bus.id || bus.bus_id}`)} className="text-blue-600"><FaEye /></button>
+                  <button onClick={() => navigate(`/school/buses/edit/${bus.id || bus.bus_id}`)} className="text-green-600"><FaEdit /></button>
+                  <button onClick={() => handleDelete(bus.id || bus.bus_id)} className="text-red-600"><FaTrash /></button>
+                </div>
+              </div>
             ))}
-
-          </tbody>
-
-        </table>
-
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

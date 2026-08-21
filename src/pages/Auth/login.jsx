@@ -221,12 +221,12 @@ export default function Login() {
                                 Login
                             </button>
 
-                            {/* <Link
-                                to="/auth/register"
-                                className="w-1/2 bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-lg text-center font-semibold"
+                            <Link
+                                to="/"
+                                className="w-1/2 bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg text-center font-semibold"
                             >
-                                Register
-                            </Link> */}
+                                Cancel
+                            </Link>
 
                         </div>
 
