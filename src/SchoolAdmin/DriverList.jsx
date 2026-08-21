@@ -20,8 +20,14 @@ export default function DriverList() {
     try {
       setLoading(true);
       setError("");
-      const response = await axios.get(`${API_URL}/drivers`);
-      setDrivers(response.data || []);
+
+      const school = JSON.parse(localStorage.getItem("de_authUser"));
+
+      const res = await axios.get(
+        `${API_URL}/drivers/school/${school.school_id}`
+      );
+
+      setDrivers(res.data || []);
     } catch (err) {
       console.error(err);
       setError("Failed to load drivers.");
@@ -29,7 +35,6 @@ export default function DriverList() {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     fetchDrivers();
   }, []);
@@ -75,7 +80,7 @@ export default function DriverList() {
             type="text"
             placeholder="Search driver..."
             value={search}
-            onChange={(e)=>setSearch(e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-11 pr-4 py-3 rounded-xl border border-gray-300 bg-gray-50"
           />
         </div>
@@ -99,7 +104,7 @@ export default function DriverList() {
               </tr>
             </thead>
             <tbody>
-              {filteredDrivers.map((driver)=>(
+              {filteredDrivers.map((driver) => (
                 <tr key={driver.id} className="border-b">
                   <td className="p-4">{driver.driver_name}</td>
                   <td className="p-4">{driver.id}</td>
@@ -109,21 +114,21 @@ export default function DriverList() {
                   <td className="p-4">
                     <div className="flex justify-center gap-3">
                       <button
-                        onClick={()=>navigate(`/school/drivers/view/${driver.id}`)}
+                        onClick={() => navigate(`/school/drivers/view/${driver.id}`)}
                         className="text-blue-600 hover:text-blue-800">
-                        <FaEye/>
+                        <FaEye />
                       </button>
 
                       <button
-                        onClick={()=>navigate(`/school/drivers/edit/${driver.id}`)}
+                        onClick={() => navigate(`/school/drivers/edit/${driver.id}`)}
                         className="text-green-600 hover:text-green-800">
-                        <FaEdit/>
+                        <FaEdit />
                       </button>
 
                       <button
-                        onClick={()=>handleDelete(driver.id)}
+                        onClick={() => handleDelete(driver.id)}
                         className="text-red-600 hover:text-red-800">
-                        <FaTrash/>
+                        <FaTrash />
                       </button>
                     </div>
                   </td>

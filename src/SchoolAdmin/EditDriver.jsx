@@ -7,12 +7,12 @@ import API_URL from "../api";
 export default function EditDriver() {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  const loggedSchool = JSON.parse(localStorage.getItem("de_authUser"));
   const [driver, setDriver] = useState({
     driver_name: "",
     phone: "",
     license_number: "",
-    school_id: "",
+    school_id: loggedSchool?.school_id || "",
     bus_id: "",
   });
 
@@ -30,7 +30,7 @@ export default function EditDriver() {
         driver_name: res.data.driver_name || "",
         phone: res.data.phone || "",
         license_number: res.data.license_number || "",
-        school_id: res.data.school_id || "",
+        school_id: loggedSchool.school_id,
         bus_id: res.data.bus_id || "",
       });
     } catch (err) {
@@ -41,8 +41,11 @@ export default function EditDriver() {
 
   const fetchBuses = async () => {
     try {
-      const res = await axios.get(`${API_URL}/buses`);
-      setBuses(res.data || []);
+      const res = await axios.get(
+        `${API_URL}/buses/school/${loggedSchool.school_id}`
+      );
+
+      setBuses(res.data.buses || []);
     } catch (err) {
       console.error(err);
     }

@@ -7,9 +7,10 @@ import API_URL from "../api";
 export default function DriverDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const loggedSchool = JSON.parse(localStorage.getItem("de_authUser"));
   const [driver, setDriver] = useState(null);
   const [loading, setLoading] = useState(true);
-
+  const [busName, setBusName] = useState("");
   useEffect(() => {
     fetchDriver();
   }, []);
@@ -17,7 +18,21 @@ export default function DriverDetails() {
   const fetchDriver = async () => {
     try {
       const res = await axios.get(`${API_URL}/drivers/${id}`);
+
+      // Security check
+      if (res.data.school_id !== loggedSchool.school_id) {
+        alert("Unauthorized access");
+        navigate("/school/drivers");
+        return;
+      }
+
       setDriver(res.data);
+
+      const busRes = await axios.get(`${API_URL}/buses/${res.data.bus_id}`);
+      if (busRes.data.success) {
+        setBusName(busRes.data.bus.bus_name);
+      }
+
     } catch (err) {
       console.error(err);
       alert("Failed to load driver.");
@@ -55,10 +70,10 @@ export default function DriverDetails() {
             <p className="mt-1">{driver.driver_name}</p>
           </div>
 
-          <div>
+          {/* <div>
             <label className="font-semibold text-gray-500">Driver ID</label>
             <p className="mt-1">{driver.id}</p>
-          </div>
+          </div> */}
 
           <div>
             <label className="font-semibold text-gray-500">Phone</label>
@@ -71,13 +86,13 @@ export default function DriverDetails() {
           </div>
 
           <div>
-            <label className="font-semibold text-gray-500">School ID</label>
-            <p className="mt-1">{driver.school_id}</p>
+            <label className="font-semibold text-gray-500">School</label>
+            <p className="mt-1">{loggedSchool.name}</p>
           </div>
 
           <div>
-            <label className="font-semibold text-gray-500">Bus ID</label>
-            <p className="mt-1">{driver.bus_id}</p>
+            <label className="font-semibold text-gray-500">Bus Name</label>
+            <p className="mt-1">{busName}</p>
           </div>
 
           <div>
